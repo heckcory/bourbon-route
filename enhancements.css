@@ -1,0 +1,37 @@
+/* Travel tools retain the original charcoal, cream and amber identity. */
+[hidden]{display:none!important}
+button,.btn,.region-btn,.nav button,.day-tabs button{min-height:44px}
+:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+.travel-tools{margin:0 0 16px;flex-wrap:wrap}
+.travel-notes{border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:22px;color:#c8c2b5;line-height:1.65}
+.travel-notes summary{cursor:pointer;color:var(--cream);min-height:32px}
+.booking-state{font-size:12px!important;font-weight:700;color:#e7c18b!important;border-left:3px solid #997440;padding-left:9px}
+.stop-actions{flex-wrap:wrap}
+.today-panel{border-color:#80613b}
+.travel-status{color:var(--cream);font-size:14px;line-height:1.6}
+.travel-status:empty{display:none}
+.hunt-feature-copy p{font-size:13px!important}
+#print-itinerary{display:none}
+@media(max-width:600px){
+.timeline{margin-left:0;border-left:0}
+.event{display:block;margin:0 0 18px}
+.event:before{display:none}
+.time{font-size:13px;margin:0 0 8px;color:var(--amber);text-align:left}
+.eventbody{padding:16px}
+.eventhead{flex-wrap:wrap;gap:8px}
+.stop-actions .btn{flex:1 1 140px;text-align:center}
+.topinner{min-height:64px;gap:10px}
+.brand{font-size:14px}
+.tag{font-size:10px;padding:5px 8px}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+@media print{
+body>*{display:none!important}
+body>#print-itinerary{display:block!important;color:#000;background:#fff;font:11pt Georgia,serif}
+#print-itinerary h1{font-size:22pt}
+#print-itinerary h2{font-size:17pt}
+#print-itinerary h3{font-size:12pt;margin-bottom:4px}
+#print-itinerary article{break-inside:avoid;margin-bottom:15px}
+#print-itinerary section{break-before:page}
+#print-itinerary section:first-of-type{break-before:auto}
+}

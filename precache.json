@@ -1,0 +1,26 @@
+{
+  "version": "3.3",
+  "assets": [
+    "./index.html",
+    "./app.js",
+    "./app.css",
+    "./enhancements.js",
+    "./enhancements.css",
+    "./pwa.js",
+    "./manifest.webmanifest",
+    "./icons/icon-192.png",
+    "./icons/icon-512.png",
+    "./assets/sketch-00.webp",
+    "./assets/sketch-01.webp",
+    "./assets/sketch-02.webp",
+    "./assets/sketch-03.webp",
+    "./assets/sketch-04.webp",
+    "./assets/sketch-05.webp",
+    "./assets/sketch-06.webp",
+    "./assets/sketch-07.webp",
+    "./assets/sketch-08.webp",
+    "./assets/sketch-09.webp",
+    "./assets/sketch-10.webp",
+    "./assets/sketch-11.webp"
+  ]
+}
