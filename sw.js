@@ -1,5 +1,5 @@
 'use strict';
-const VERSION = '3.9';
+const VERSION = '3.10';
 const SCOPE = self.registration.scope;
 const PREFIX = 'bourbon-route:' + encodeURIComponent(new URL(SCOPE).pathname) + ':';
 const CACHE = PREFIX + VERSION;
@@ -13,7 +13,7 @@ function manifestURLs(data) {
     if (!url.href.startsWith(SCOPE) || url.origin !== new URL(SCOPE).origin || url.search || url.hash) throw new Error('Asset outside application scope');
     return url.href;
   }))];
-  for (const file of ['index.html', 'app.js', 'app.css', 'enhancements.js', 'enhancements.css', 'pwa.js', 'manifest.webmanifest']) {
+  for (const file of ['index.html', 'app.js', 'app.css', 'enhancements.js', 'enhancements.css', 'road-settings.js', 'manifest.webmanifest']) {
     if (!urls.includes(new URL(file, SCOPE).href)) throw new Error('Missing core asset: ' + file);
   }
   return urls;
@@ -38,18 +38,11 @@ self.addEventListener('activate', event => event.waitUntil((async () => {
 })()));
 async function navigation(request) {
   const cache = await caches.open(CACHE);
-  let timer;
-  const controller = new AbortController();
-  try {
-    const response = await Promise.race([
-      fetch(request, {signal: controller.signal}),
-      new Promise((_, reject) => { timer = setTimeout(() => { controller.abort(); reject(new Error('Network timeout')); }, 4000); })
-    ]);
-    if (response.ok) return response;
-    if (response.status < 500) return response;
-  } catch (_) { /* Offline or slow connection: use the complete installed shell. */ }
-  finally { clearTimeout(timer); }
-  return await cache.match(SHELL) || new Response('Bourbon Route is not available offline yet. Connect once and use Check offline readiness.', {status: 503, headers: {'Content-Type': 'text/plain; charset=utf-8'}});
+  // Keep the HTML and its assets on the same installed version until activation.
+  const shell = await cache.match(SHELL);
+  if (shell) return shell;
+  try { return await fetch(request); }
+  catch (_) { return new Response('Bourbon Route is not available offline yet. Connect once and check offline readiness in Settings.', {status: 503, headers: {'Content-Type': 'text/plain; charset=utf-8'}}); }
 }
 self.addEventListener('fetch', event => {
   const request = event.request;

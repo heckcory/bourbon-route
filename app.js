@@ -81,8 +81,45 @@ function storageNotice(text){const el=document.getElementById('storage-notice');
 function getHunt(){try{huntMemory=validHunt(JSON.parse(localStorage.getItem(HUNT_KEY)||'{}'))}catch(e){storageNotice('Photo Hunt storage is unavailable. Progress may not carry over after you close this page.')}return huntMemory}
 function saveHunt(h){huntMemory=validHunt(h);try{localStorage.setItem(HUNT_KEY,JSON.stringify(huntMemory))}catch(e){storageNotice('Progress is only saved for this session.')}}
 function updateHuntProgress(){document.getElementById('huntprogress').textContent=Object.values(huntMemory).filter(Boolean).length+' of '+hunts.length+' completed'}
-function toggleHunt(i,checked){huntMemory[i]=checked;saveHunt(huntMemory);updateHuntProgress();document.getElementById('hunt-'+i)?.classList.toggle('is-complete',checked)}
-function renderHunt(){const h=getHunt();const progress=document.getElementById('huntprogress');progress.setAttribute('aria-live','polite');updateHuntProgress();document.getElementById('huntgrid').innerHTML=hunts.map((x,i)=>'<div id="hunt-'+i+'" class="hunt hunt-feature '+(i===3?'oak-iron':'legacy-art')+' '+(h[i]?'is-complete':'')+'"><img class="hunt-feature-art" loading="lazy" decoding="async" src="'+(i===3?oakIronCardArt:huntArt[i])+'" alt=""><div class="hunt-feature-content"><label class="hunt-feature-check"><input type="checkbox" aria-label="Mark '+escapeHTML(x[1])+' complete" '+(h[i]?'checked':'')+' onchange="toggleHunt('+i+',this.checked)"></label><div class="hunt-feature-copy"><h3>'+escapeHTML(x[1])+'</h3><p>'+escapeHTML(x[2])+'</p></div></div></div>').join('')}
+const huntGrid=document.getElementById('huntgrid');
+const sketchDialog=document.getElementById('sketch-dialog');
+let activeSketch=-1,activeSketchButton=null;
+const sketchSrc=i=>i===3?oakIronCardArt:huntArt[i];
+const sketchLabel=(i,checked)=>hunts[i][1]+(checked?', collected':', not collected');
+function toggleHunt(i,checked){
+ if(!Number.isInteger(i)||!hunts[i])return;
+ huntMemory[i]=checked;saveHunt(huntMemory);updateHuntProgress();
+ const card=document.getElementById('hunt-'+i);
+ card?.classList.toggle('is-complete',checked);
+ card?.setAttribute('aria-label',sketchLabel(i,checked));
+ if(activeSketch===i) document.getElementById('sketch-detail-frame').classList.toggle('is-complete',checked);
+}
+function renderHunt(){
+ const h=getHunt();document.getElementById('huntprogress').setAttribute('aria-live','polite');updateHuntProgress();
+ huntGrid.innerHTML=hunts.map((x,i)=>'<button type="button" id="hunt-'+i+'" class="sketch-card '+(h[i]?'is-complete':'')+'" data-sketch="'+i+'" aria-haspopup="dialog" aria-label="'+escapeHTML(sketchLabel(i,h[i]))+'"><span class="sketch-thumbnail"><img loading="lazy" decoding="async" src="'+sketchSrc(i)+'" alt=""></span><span class="sketch-name">'+escapeHTML(x[1])+'</span></button>').join('');
+}
+function openSketch(i,button){
+ if(!hunts[i]||!sketchDialog||sketchDialog.open)return;
+ activeSketch=i;activeSketchButton=button;
+ const [,name,description]=hunts[i],art=document.getElementById('sketch-detail-art');
+ document.getElementById('sketch-title').textContent=name;
+ art.src=sketchSrc(i);art.alt=name+' sketch';
+ document.getElementById('sketch-description').textContent=description;
+ document.getElementById('sketch-collected').checked=!!huntMemory[i];
+ document.getElementById('sketch-detail-frame').classList.toggle('is-complete',!!huntMemory[i]);
+ sketchDialog.showModal();
+}
+if(sketchDialog){
+ huntGrid.addEventListener('click',e=>{
+  const card=e.target.closest('[data-sketch]');if(card&&huntGrid.contains(card))openSketch(Number(card.dataset.sketch),card);
+ });
+ document.getElementById('sketch-collected').addEventListener('change',e=>toggleHunt(activeSketch,e.target.checked));
+ sketchDialog.addEventListener('close',()=>{
+  activeSketch=-1;
+  if(activeSketchButton?.isConnected)activeSketchButton.focus();
+  activeSketchButton=null;
+ });
+}
 renderHunt();
 
 try { renderDays(); } catch (error) { console.error('Itinerary initialization failed:', error); }

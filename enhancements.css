@@ -41,4 +41,34 @@ body>#print-itinerary{display:block!important;color:#000;background:#fff;font:11
 .install-banner-inner strong{color:var(--amber)}
 .install-banner-actions{display:flex;gap:8px;flex-wrap:wrap}
 #install-banner-help{flex:1 0 100%;color:#e7c18b}
-@media(display-mode:standalone){.install-banner{display:none!important}}
+@media(display-mode:standalone){#install-banner{display:none!important}}
+
+.top-tools{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.settings-gear{display:grid;place-items:center;width:44px;min-width:44px;min-height:44px;border:1px solid var(--line);border-radius:9px;background:#20211e;color:var(--amber);cursor:pointer}
+.settings-gear:hover{border-color:var(--amber);background:#332c22}
+.settings-dialog{width:min(94vw,560px)}
+.settings-dialog h2{padding-right:86px}
+.settings-group{border-top:1px solid var(--line);margin-top:16px;padding-top:13px}
+.settings-group h3{margin:0 0 10px}
+.settings-group p{margin:9px 0 0}
+.settings-group .actions{flex-wrap:wrap}
+.update-banner .install-banner-inner{border-color:#80613b}
+#banner-update-status{flex:1 0 100%;color:#e7c18b}
+#storage-notice:empty{display:none}
+@media(max-width:430px){.top-tools{gap:5px}.settings-gear{width:44px}.settings-dialog h2{padding-right:74px}}
+
+.hunt-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 14px}
+.sketch-card{display:flex;flex-direction:column;align-items:stretch;gap:8px;width:100%;min-width:0;padding:0;border:0;background:transparent;text-align:left;color:var(--cream);cursor:pointer}
+.sketch-thumbnail{display:block;aspect-ratio:1/1;overflow:hidden;border-radius:10px;border:1px solid var(--line);background:#20211e;box-sizing:border-box}
+.sketch-thumbnail img{display:block;width:100%;height:100%;object-fit:cover}
+.sketch-name{font-size:clamp(.72rem,2vw,.95rem);line-height:1.2;font-weight:750;letter-spacing:.08em;text-transform:uppercase;overflow-wrap:anywhere}
+.sketch-card:not(.is-complete) img,.sketch-detail-frame:not(.is-complete) img{filter:grayscale(1);opacity:.50}
+.sketch-card:hover .sketch-thumbnail,.sketch-card.is-complete .sketch-thumbnail{border-color:#cda36a}
+.sketch-dialog{width:min(94vw,650px)}
+.sketch-dialog h2{padding-right:74px;margin-bottom:10px}
+.sketch-detail-frame{display:grid;place-items:center;border-radius:10px;overflow:hidden;background:#171a19;border:1px solid var(--line)}
+.sketch-detail-frame img{display:block;width:100%;max-height:48vh;object-fit:contain}
+.sketch-check{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:8px;color:var(--cream);cursor:pointer}
+.sketch-check input{width:20px;height:20px;margin:0;accent-color:var(--amber)}
+@media(max-width:600px){.hunt-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 10px}}
+@media(max-width:430px){.sketch-dialog{padding:18px}.sketch-detail-frame img{max-height:42vh}}
