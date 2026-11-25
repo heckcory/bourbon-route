@@ -26,7 +26,6 @@ function price(event,prices){return event[1]==='Breakfast'&&['Proof on Main','Oa
 function locationFor(day,event){
  const n=event[2].replace(/[‘’]/g,"'");
  const fixed={
- 'Elizabethtown Supercharger':'1036 N Mulberry St, Elizabethtown, KY',
  'Frankfort Supercharger':'1302 US-127, Frankfort, KY',
  'Buffalo Trace':'Buffalo Trace Distillery, Frankfort, KY',
  'Castle & Key':'Castle & Key Distillery, Frankfort, KY',
