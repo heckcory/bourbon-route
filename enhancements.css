@@ -35,3 +35,10 @@ body>#print-itinerary{display:block!important;color:#000;background:#fff;font:11
 #print-itinerary section{break-before:page}
 #print-itinerary section:first-of-type{break-before:auto}
 }
+
+.install-banner-inner{display:flex;align-items:center;flex-wrap:wrap;gap:8px 20px;margin:12px 0;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:#20211e;color:var(--cream);font-size:14px;line-height:1.45}
+.install-banner-inner p{margin:0;flex:1 1 260px}
+.install-banner-inner strong{color:var(--amber)}
+.install-banner-actions{display:flex;gap:8px;flex-wrap:wrap}
+#install-banner-help{flex:1 0 100%;color:#e7c18b}
+@media(display-mode:standalone){.install-banner{display:none!important}}

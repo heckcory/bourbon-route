@@ -1,4 +1,4 @@
-/* Manual install and verified offline readiness. No automatic prompts or reloads. */
+/* Install guidance, verified offline readiness and opt-in updates. */
 (() => {
   'use strict';
   const byId = id => document.getElementById(id);
@@ -6,27 +6,86 @@
   const offline = byId('offline-status'), update = byId('update-status'), help = byId('install-help');
   const say = (node, text) => { if (node) { node.textContent = text; node.setAttribute('role', 'status'); } };
   let deferredPrompt, registration, reloadRequested = false;
-  const isInstalled = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  let relatedInstalled = false;
+  const isInstalled = () => relatedInstalled || window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const banner = byId('install-banner'), bannerAction = byId('install-banner-action');
+  const bannerHelp = byId('install-banner-help'), bannerDismiss = byId('install-banner-dismiss');
+  const installKey = 'bourbon-route:hide-install-banner';
+  let hideBanner = false;
+  try { hideBanner = localStorage.getItem(installKey) === '1'; } catch (_) {}
+  const rememberHidden = () => {
+    hideBanner = true;
+    if (banner) banner.hidden = true;
+    try { localStorage.setItem(installKey, '1'); } catch (_) {}
+  };
+  let checkingInstall = !hideBanner && !isInstalled() && typeof navigator.getInstalledRelatedApps === 'function';
+  const refreshBanner = () => {
+    if (banner) banner.hidden = checkingInstall || hideBanner || isInstalled();
+    if (bannerAction) bannerAction.textContent = deferredPrompt ? 'Install app' : 'How to install';
+  };
   if (help) help.hidden = true;
   if (apply) apply.hidden = true;
   if (install && isInstalled()) install.hidden = true;
+  refreshBanner();
+  if (checkingInstall) {
+    const finishCheck = () => { checkingInstall = false; refreshBanner(); };
+    const timer = setTimeout(finishCheck, 500);
+    Promise.resolve().then(() => navigator.getInstalledRelatedApps()).then(apps => {
+      relatedInstalled = apps.some(app => app.platform === 'webapp');
+      if (relatedInstalled) {
+        if (install) install.hidden = true;
+        if (help) help.hidden = true;
+      }
+    }).catch(() => {}).finally(() => { clearTimeout(timer); finishCheck(); });
+  }
   window.addEventListener('beforeinstallprompt', event => {
     event.preventDefault(); deferredPrompt = event;
     if (install && !isInstalled()) { install.hidden = false; install.textContent = 'Install app'; }
+    refreshBanner();
   });
-  window.addEventListener('appinstalled', () => { deferredPrompt = null; if (install) install.hidden = true; if (help) help.hidden = true; });
-  if (install) install.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      const prompt = deferredPrompt; deferredPrompt = null;
-      try { await prompt.prompt(); await prompt.userChoice; } catch (_) { say(byId('install-help-text'), 'Use your browser menu to install or add this site to your home screen.'); if (help) help.hidden = false; }
-    } else if (help) {
-      help.hidden = false;
-      say(help, /iPad|iPhone|iPod/.test(navigator.userAgent) ? 'In Safari, tap Share, then Add to Home Screen. Offline access is ready only after the check below succeeds.' : 'Use your browser menu to choose Install app or Add to Home Screen, if offered. You can also use this site normally in your browser.');
+  window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    rememberHidden();
+    if (install) install.hidden = true;
+    if (help) help.hidden = true;
+  });
+  function showInstallHelp(container, message, trigger) {
+    const appleMobile = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    say(message, appleMobile
+      ? 'In Safari, tap Share, then Add to Home Screen. If shown, leave Open as Web App on, then tap Add.'
+      : 'In your browser menu, look for Install app or Add to Home Screen. You can keep using the site without installing.');
+    if (container) container.hidden = false;
+    if (trigger === bannerAction) trigger.setAttribute('aria-expanded', 'true');
+  }
+  async function requestInstall(container, message, trigger) {
+    if (isInstalled()) { refreshBanner(); return; }
+    if (!deferredPrompt) { showInstallHelp(container, message, trigger); return; }
+    const prompt = deferredPrompt;
+    deferredPrompt = null;
+    try {
+      await prompt.prompt();
+      const choice = await prompt.userChoice;
+      if (choice && choice.outcome === 'accepted') {
+        rememberHidden();
+        if (install) install.hidden = true;
+        if (help) help.hidden = true;
+      }
+    } catch (_) {
+      showInstallHelp(container, message, trigger);
+    } finally {
+      refreshBanner();
     }
+  }
+  if (bannerAction) bannerAction.addEventListener('click', () => requestInstall(bannerHelp, bannerHelp, bannerAction));
+  if (bannerDismiss) bannerDismiss.addEventListener('click', () => {
+    rememberHidden();
+    const activeNav = document.querySelector('#nav button.active');
+    if (activeNav) activeNav.focus();
   });
+  if (install) install.addEventListener('click', () => requestInstall(help, byId('install-help-text'), install));
   const dismiss = byId('dismiss-install-help');
   if (dismiss) dismiss.addEventListener('click', () => { if (help) help.hidden = true; });
-  // Help is only ever shown by an explicit click, so dismissal survives reloads without storage.
   function showUpdate() {
     if (!registration || !registration.waiting) return;
     say(update, 'An update is ready. Apply it when you are ready to reload this page.');
