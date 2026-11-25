@@ -1,7 +1,7 @@
 /* Bourbon Route travel enhancements. No accounts, booking claims, or vehicle connection. */
 (function(root) {
 'use strict';
-const DATES=['2027-04-07','2027-04-08','2027-04-09','2027-04-10','2027-04-11'];
+const DATES=['2027-04-14','2027-04-15','2027-04-16','2027-04-17','2027-04-18'];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function exactTime(day,label){
  const m=/^(\d{1,2}):(\d{2}) (AM|PM) (ET|CT)$/.exec(label);
@@ -10,7 +10,7 @@ function exactTime(day,label){
  return new Date(DATES[day]+'T'+String(hour).padStart(2,'0')+':'+m[2]+':00'+(m[4]==='CT'?'-05:00':'-04:00'));
 }
 function nextStop(all,now){
- const start=new Date('2027-04-07T00:00:00-05:00'),end=new Date('2027-04-12T00:00:00-05:00');
+ const start=new Date('2027-04-14T00:00:00-05:00'),end=new Date('2027-04-19T00:00:00-05:00');
  if(now<start)return {phase:'before'};
  if(now>=end)return {phase:'after'};
  const events=all.flatMap((d,day)=>d.events.map((event,index)=>({day,index,event,at:exactTime(day,event[0])}))).filter(x=>x.at&&x.at>=now).sort((a,b)=>a.at-b.at);
@@ -24,14 +24,14 @@ function booking(event){
 }
 function price(event,prices){return event[1]==='Breakfast'&&['Proof on Main','Oak & Ember'].includes(event[2])?'Breakfast price to confirm':prices[event[2]]||'';}
 function locationFor(day,event){
- const n=event[2];
+ const n=event[2].replace(/[‘’]/g,"'");
  const fixed={
  'Elizabethtown Supercharger':'1036 N Mulberry St, Elizabethtown, KY',
  'Frankfort Supercharger':'1302 US-127, Frankfort, KY',
  'Buffalo Trace':'Buffalo Trace Distillery, Frankfort, KY',
  'Castle & Key':'Castle & Key Distillery, Frankfort, KY',
  'Bourbon on Main':'Bourbon on Main, Frankfort, KY',
- "Maker's Mark":"Maker's Mark Distillery, Loretto, KY",
+ "Maker's Mark":"3350 Burkes Spring Rd, Loretto, KY 40037",
  'Star Hill Provisions':"Star Hill Provisions, Maker's Mark, Loretto, KY",
  'Woodford Reserve':'Woodford Reserve Distillery, Versailles, KY',
  'Four Roses Distillery':'Four Roses Distillery, Lawrenceburg, KY',
@@ -117,7 +117,7 @@ function renderToday(){
  const n=nextStop(days,new Date()),p=document.getElementById('today-panel');
  const key=n.phase+':'+n.day+':'+n.index;if(key===todayKey)return;todayKey=key;
  let title,copy;
- if(n.phase==='before'){title='Ready for April 7–11, 2027';copy='Your trip has not started yet. Review the planned stops and confirm reservations before departure.';}
+ if(n.phase==='before'){title='Ready for April 14–18, 2027';copy='Your trip has not started yet. Review the planned stops and confirm reservations before departure.';}
  else if(n.phase==='after'||n.phase==='finished'){title='The road home';copy='There are no more timed stops ahead. The itinerary and Photo Hunt remain available.';}
  else {title='Next planned stop: '+n.event[2];copy=days[n.day].label+' · '+n.event[0]+'. Based on the schedule, not your live location. Untimed stops and changes may occur in between.';}
  p.innerHTML='<div class="smallcaps">TODAY / NEXT STOP</div><h3 id="today-title">'+esc(title)+'</h3><p>'+esc(copy)+'</p><button class="btn" type="button">Open '+(n.phase==='during'?'this day':'itinerary')+'</button>';
@@ -132,7 +132,7 @@ document.getElementById('export-calendar').addEventListener('click',()=>{
 document.getElementById('print-trip').addEventListener('click',()=>{
  document.getElementById('print-itinerary')?.remove();
  const printable=document.createElement('div');printable.id='print-itinerary';
- printable.innerHTML='<h1>The Bourbon Route · April 7–11, 2027</h1><p>Proposed itinerary, not confirmed bookings. Kentucky times are Eastern; Nashville times are Central. Verify availability, prices and travel times. Arrange a sober driver.</p>'+days.map(d=>'<section><h2>'+esc(d.title)+'</h2><p>'+esc(d.subtitle)+'</p>'+d.events.map(e=>'<article><h3>'+esc(e[0])+' · '+esc(e[2])+'</h3><p>'+esc(e[3])+'</p><small>'+esc(booking(e))+'</small></article>').join('')+'</section>').join('');
+ printable.innerHTML='<h1>The Bourbon Route · April 14–18, 2027</h1><p>Proposed itinerary, not confirmed bookings. Kentucky times are Eastern; Nashville times are Central. Verify availability, prices and travel times. Arrange a sober driver.</p>'+days.map(d=>'<section><h2>'+esc(d.title)+'</h2><p>'+esc(d.subtitle)+'</p>'+d.events.map(e=>'<article><h3>'+esc(e[0])+' · '+esc(e[2])+'</h3><p>'+esc(e[3])+'</p><small>'+esc(booking(e))+'</small></article>').join('')+'</section>').join('');
  document.body.append(printable);window.print();
 });
 decorateDays();if(location.hash)fromHash();else updateNav();

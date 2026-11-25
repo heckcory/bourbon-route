@@ -1,6 +1,6 @@
 # The Bourbon Route
 
-Kentucky 2027 trip companion, app v3.3. Static HTML/CSS/JavaScript with original Sketchbook artwork.
+Kentucky 2027 trip companion, app v3.4. Static HTML/CSS/JavaScript with original Sketchbook artwork.
 
 GitHub Pages serves main branch / (root). All asset and PWA paths are relative for /bourbon-route/. No build or paid backend required. Preview with python -m http.server.
 
