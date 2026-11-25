@@ -1,5 +1,5 @@
 'use strict';
-const VERSION = '3.6';
+const VERSION = '3.7';
 const SCOPE = self.registration.scope;
 const PREFIX = 'bourbon-route:' + encodeURIComponent(new URL(SCOPE).pathname) + ':';
 const CACHE = PREFIX + VERSION;
